@@ -1,0 +1,33 @@
+#!/bin/bash
+
+mkdir ./converted
+
+# Loop through all .flac and .FLAC files
+
+counter = 0
+
+for file in *.flac *.FLAC; do
+    # Skip if no files match
+    [ -e "$file" ] || continue
+
+    # Skip files containing "(NUMBER)"
+    if [[ "$file" =~ \([0-9]+\) ]]; then
+        echo "Skipping duplicate: $file"
+        continue
+    fi
+
+    # Get the base name (without extension)
+    basename=$(basename "$file" .flac)
+    basename=$(basename "$basename" .FLAC)
+
+    # Set output file name
+    output="./converted/$basename.ogg"
+
+    # Convert using ffmpeg
+    ffmpeg -i "$file" -c:a libopus -compression_level 10 "$output" &&
+    counter=$((counter + 1))
+done
+
+notify-send -a "converter" -t 0 "Finished" "$counter files converted."
+
+ls -lhs ./converted/
