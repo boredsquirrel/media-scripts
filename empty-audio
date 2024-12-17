@@ -1,0 +1,13 @@
+#!/bin/bash
+# script to generate an empty audio file
+
+# it should be as small as possible:
+# anullsrc=r=1:cl=mono : 1 bit/s bitrate, mono channel
+# compression_level 10 : high compression to make it small
+
+# result: 30min silence is 399KB
+# this beats this project by far: https://github.com/anars/blank-audio
+
+read -rp "Enter amount of seconds: " seconds &&
+
+ffmpeg -f lavfi -i anullsrc=r=1:cl=mono -t $seconds -c:a libopus -compression_level 10 "$seconds"-seconds-silence.ogg
