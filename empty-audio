@@ -1,13 +1,52 @@
 #!/bin/bash
-# script to generate an empty audio file
-
-# it should be as small as possible:
-# anullsrc=r=1:cl=mono : 1 bit/s bitrate, mono channel
-# compression_level 10 : high compression to make it small
-
-# result: 30min silence is 399KB
-# this beats this project by far: https://github.com/anars/blank-audio
 
 read -rp "Enter amount of seconds: " seconds &&
 
-ffmpeg -f lavfi -i anullsrc=r=1:cl=mono -t $seconds -c:a libopus -compression_level 10 "$seconds"-seconds-silence.ogg
+#### Construct the filename ###
+
+# filename
+local secrest=0
+local minutes=0
+local hours=0
+local result=""
+
+# Calculate minutes and remaining seconds
+if (( seconds >= 60 )); then
+    minutes=$(( seconds / 60 ))
+    secrest=$(( seconds % 60 ))
+else
+    secrest=$seconds
+fi
+
+# Calculate hours and remaining minutes
+if (( minutes >= 60 )); then
+    hours=$(( minutes / 60 ))
+    minutes=$(( minutes % 60 ))
+fi
+
+# Build the filename
+result=""
+(( hours > 0 )) && result+="${hours}h"
+(( minutes > 0 )) && result+="${minutes}min"
+(( secrest > 0 )) && result+="${secrest}sec"
+
+### Create the file ###
+
+# parameters for AAC:
+# - 4000Hz as samplerate, lowest possible
+# - mono channel, doesnt matter if the audioplayer duplicates this as this is silence
+# - 1kHz bitrate, lowest possible
+
+# AAC
+ffmpeg -f lavfi -i anullsrc=r=2000:cl=mono -t "$seconds" -c:a aac -b:a 1k "$result"-silence.m4a
+
+
+# ALTERNATIVES
+# opus (4x the size)
+# higher minimum bitrate
+# ffmpeg -f lavfi -i anullsrc=r=8000:cl=mono -t $seconds -c:a libopus -application voip "$result"-silence.ogg
+
+# other codecs tested, all bigger:
+# wav
+# mp3
+# raw
