@@ -16,8 +16,8 @@ for file in *.wav *.WAV; do
     fi
 
     # Get the base name (without extension)
-    basename=$(basename "$file" .flac)
-    basename=$(basename "$basename" .FLAC)
+    basename=$(basename "$file" .wav)
+    basename=$(basename "$basename" .WAV)
 
     # Set output file name
     output="./$basename.ogg"
