@@ -1,10 +1,9 @@
 #!/bin/bash
 
-mkdir ./converted
+echo "Converted:" > filelist
+counter = 0
 
 # Loop through all .flac and .FLAC files
-
-counter = 0
 
 for file in *.flac *.FLAC; do
     # Skip if no files match
@@ -21,13 +20,16 @@ for file in *.flac *.FLAC; do
     basename=$(basename "$basename" .FLAC)
 
     # Set output file name
-    output="./converted/$basename.ogg"
+    output="./$basename.ogg"
 
     # Convert using ffmpeg
     ffmpeg -i "$file" -c:a libopus -compression_level 10 "$output" &&
+
+    # stats
     counter=$((counter + 1))
+    echo "- $basename" >> filelist
 done
 
 notify-send -a "converter" -t 0 "Finished" "$counter files converted."
 
-ls -lhs ./converted/
+cat filelist && rm -f filelist
