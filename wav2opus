@@ -1,0 +1,38 @@
+#!/bin/bash
+
+echo "Converted:" > filelist
+counter = 0
+
+# Loop through all .wav and .WAV files
+
+for file in *.wav *.WAV; do
+    # Skip if no files match
+    [ -e "$file" ] || continue
+
+    # Skip files containing "(NUMBER)"
+    if [[ "$file" =~ \([0-9]+\) ]]; then
+        echo "Skipping duplicate: $file"
+        continue
+    fi
+
+    # Get the base name (without extension)
+    basename=$(basename "$file" .flac)
+    basename=$(basename "$basename" .FLAC)
+
+    # Set output file name
+    output="./$basename.ogg"
+
+    # Convert using ffmpeg
+    ffmpeg -i "$file" -c:a libopus -compression_level 10 "$output" &&
+
+    # stats
+    counter=$((counter + 1))
+    echo "- $basename" >> filelist
+
+done
+
+clear
+
+notify-send -a "converter" -t 0 "Finished" "$counter files converted."
+
+cat filelist && rm -f filelist
