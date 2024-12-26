@@ -1,35 +1,60 @@
 #!/bin/bash
 
 echo "Converted:" > filelist
-counter = 0
+counter=0
+
+# Function to find the first matching cover image (case-insensitive)
+find_cover() {
+    shopt -s nocaseglob
+    for file in cover.jpg front.jpg cover.png front.png; do
+        if [[ -f "$file" ]]; then
+            echo "$file"
+            return
+        fi
+    done
+    echo "" # Return empty string if no cover found
+}
+
+# Find the cover file
+cover_file=$(find_cover)
 
 # Loop through all .flac and .FLAC files
-
 for file in *.flac *.FLAC; do
-    # Skip if no files match
-    [ -e "$file" ] || continue
+    if [[ ! -e "$file" ]]; then
+        continue
+    fi
 
     # Skip files containing "(NUMBER)"
     if [[ "$file" =~ \([0-9]+\) ]]; then
-        echo "Skipping duplicate: $file"
+        echo "Skipped duplicate: $file" >> filelist
         continue
     fi
 
     # Get the base name (without extension)
-    basename=$(basename "$file" .flac)
-    basename=$(basename "$basename" .FLAC)
+    basename="${file%.*}"
 
     # Set output file name
-    output="./$basename.ogg"
+    output="./${basename}.opus"
 
-    # Convert using ffmpeg
-    ffmpeg -i "$file" -c:a libopus -compression_level 10 "$output" &&
+    # Convert using opusenc
+    if [[ -n "$cover_file" ]]; then
+        opusenc --picture="$cover_file" "$file" "$output"
+    else
+        opusenc "$file" "$output"
+    fi
 
-    # stats
-    counter=$((counter + 1))
-    echo "- $basename" >> filelist
+    # Check if conversion succeeded and the output file is non-empty
+    if [[ $? -eq 0 && -s "$output" ]]; then
+        counter=$((counter + 1))
+        echo "$counter: $basename" >> filelist
+    else
+        echo "Failed to convert: $file" >> filelist
+        rm -f "$output"
+    fi
 done
 
+# Notify the user
 notify-send -a "converter" -t 0 "Finished" "$counter files converted."
 
+# Display the conversion log and clean up
 cat filelist && rm -f filelist
