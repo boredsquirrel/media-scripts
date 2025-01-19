@@ -1,0 +1,63 @@
+#!/usr/bin/env fish
+
+# Initialize filelist and counter
+echo "Converted:" > filelist
+set counter 0
+
+# Function to find the first matching cover image (case-insensitive)
+function find_cover
+    for file in cover.jpg front.jpg cover.png front.png
+        if test -f $file
+            echo $file
+            return
+        end
+    end
+    echo "" # Return empty string if no cover found
+end
+
+# Find the cover file
+set cover_file (find_cover)
+
+# Loop through all .flac and .FLAC files
+for file in *.flac *.FLAC
+    if not test -e "$file"
+        continue
+    end
+
+    # Skip files containing "(NUMBER)"
+    if echo $file | grep -qE "\([0-9]+\)"
+        echo "Skipped duplicate: $file" >> filelist
+        continue
+    end
+
+    # Get the base name (without extension)
+    set basename (basename "$file" .flac)
+
+    # Set output file name
+    set output "./$basename.opus"
+
+    opusenc "$file" "$output" && rm -f "$file"
+
+#    # Convert using opusenc
+#    if test -n "$cover_file"
+#        opusenc --picture="$cover_file" "$file" "$output"
+#    else
+#        opusenc "$file" "$output"
+#    end
+
+    # Check if conversion succeeded and the output file is non-empty
+    if test $status -eq 0 -a -s "$output"
+        set counter (math $counter + 1)
+        echo "$counter: $basename" >> filelist
+    else
+        echo "Failed to convert: $file" >> filelist
+        rm -f "$output"
+    end
+end
+
+# Notify the user
+notify-send -a "converter" -t 0 "Finished" "$counter files converted."
+
+# Display the conversion log and clean up
+cat filelist
+rm -f filelist
