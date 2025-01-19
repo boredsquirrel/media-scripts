@@ -1,4 +1,5 @@
 #!/bin/bash
+set -euo pipefail
 
 read -rp "Enter amount of seconds: " seconds &&
 
