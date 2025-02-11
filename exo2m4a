@@ -1,0 +1,12 @@
+#!/bin/bash
+
+# convert Android exp player files into m4a, without reencoding
+# metadata is lost anyways, at least when using RiMusic downloads
+
+for exo_file in *.exo; do
+    base_name=$(basename "$exo_file" .exo)
+    output_file="$base_name.m4a"
+
+    ffmpeg -i "$exo_file" -c:a copy -map_metadata 0 "$output_file"
+    fi
+done
