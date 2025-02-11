@@ -31,7 +31,7 @@ You can test how much `opus` takes from your beloved `flac` files, by doing this
 
 You will only hear what is left in the lossless file, but not in the lossy one. While AAC and mp3 remove noticeable things, I wasn't able to hear anything with opus.
 
-## `mpd` to opus, `exo` to `m4a`
+## `mpd` to `opus`, `exo` to `m4a`
 These seem to be strange file formats that actually contain opus and AAC audio.
 
 The conversion is quick and makes them playable with many players.
