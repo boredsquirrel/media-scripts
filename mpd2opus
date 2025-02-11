@@ -1,0 +1,11 @@
+#!/bin/bash
+
+# convert all .mpd files to .opus
+
+for file in *.mpd; do
+    base_name=$(basename "$file" .mpd)
+    output_file="$base_name.opus"
+
+    ffmpeg -i "$file" -map 0 -c:a copy -map_metadata 0 "$output_file"
+    fi
+done
