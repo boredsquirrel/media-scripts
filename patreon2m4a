@@ -1,0 +1,7 @@
+#!/bin/bash
+
+# input: a directory full of extracted .mp3 files, common when using video downloaders from various platforms
+# extracts the AAC stream from the MP3-TS files, concatenates them and puts them into a .m4a container
+# no reencoding, so blazingly fast
+
+ffmpeg -f mpegts -i "concat:$(ls -1v *.mp3 | paste -sd '|' -)" -map 0:a:0 -c copy output.m4a
