@@ -1,6 +1,7 @@
 #!/bin/bash
 
-# input: a directory full of extracted .mp3 files, common when using video downloaders from various platforms
+# input: a directory full of extracted .mp3 files, common when using video stream downloaders on various platforms
+# example: https://addons.mozilla.org/firefox/addon/video-audio-downloader/
 # extracts the AAC stream from the MP3-TS files, concatenates them and puts them into a .m4a container
 # no reencoding, so blazingly fast
 
