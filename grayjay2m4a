@@ -1,0 +1,9 @@
+#!/bin/bash
+
+# convert all .video files in a folder to m4a
+# created with Grayjay desktop
+# no reencoding
+
+for f in *.video; do
+    ffmpeg -i "$f" -c copy "${f%.video}.m4a" && rm "$f";
+done
