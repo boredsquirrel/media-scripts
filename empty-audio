@@ -6,10 +6,10 @@ read -rp "Enter amount of seconds: " seconds &&
 #### Construct the filename ###
 
 # filename
-local secrest=0
-local minutes=0
-local hours=0
-local result=""
+secrest=0
+minutes=0
+hours=0
+result=""
 
 # Calculate minutes and remaining seconds
 if (( seconds >= 60 )); then
