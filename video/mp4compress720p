@@ -1,0 +1,23 @@
+#!/bin/bash
+
+# compress a Video with modern and free codecs
+# OPUS audio, 92k bitrate
+# VP9 Video, 720p, strong compression, veryslow
+
+set -euo pipefail
+
+# Check if input file is provided
+if [ "$#" -ne 1 ]; then
+    echo "Usage: $0 input.mp4"
+    exit 1
+fi
+
+input_file="$1"
+
+base_name=$(basename "$input_file" .mp4)
+
+output_file="${base_name}-compressed-720p.mp4"
+
+ffmpeg -i "$input_file" -vf "scale=-1:720" -c:v libvpx-vp9 -b:v 1M -crf 30 -preset veryslow -c:a libopus -b:a 92k -movflags +faststart -threads 6 "$output_file"
+
+echo "Compression complete: $output_file"
