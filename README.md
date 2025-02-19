@@ -31,7 +31,18 @@ You can test how much `opus` takes from your beloved `flac` files, by doing this
 
 You will only hear what is left in the lossless file, but not in the lossy one. While AAC and mp3 remove noticeable things, I wasn't able to hear anything with opus.
 
-## `mpd` to `opus`, `exo` to `m4a`
-These seem to be strange file formats that actually contain opus and AAC audio.
+## [Grayjay](grayjay.app) downloads conversions
 
-The conversion is quick and makes them playable with many players.
+- `mpd` to `opus`
+- `exo` and `.video` to `m4a`
+
+These are strange file formats for IOS or the Android EXO media player. They contain AAC or OPUS audio.
+
+The conversion does not use re-encoding, just writes the audio streams into a different container, making them work in normal players. Thus the conversion is very quick.
+
+## Audio stream tricks
+- patreon .mp3 to m4a
+
+Patreon videos can be extracted from the browser, using Firefox addons [like this one](https://addons.mozilla.org/firefox/addon/video-audio-downloader). But they are separated into snippets, have broken metadata and more.
+
+`ffmpeg` is able to extract the AAC audio stream from the actual MP3-TS files, concatenate them and write them into a m4a container.
