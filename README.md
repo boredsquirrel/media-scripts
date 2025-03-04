@@ -33,8 +33,8 @@ You will only hear what is left in the lossless file, but not in the lossy one. 
 
 ## [Grayjay](grayjay.app) downloads conversions
 
-- `mpd` to `opus`
-- `exo` and `.video` to `m4a`
+- `.mpd` to `opus`
+- `.exo` and `.video` to `m4a`
 
 These are strange file formats for IOS or the Android EXO media player. They contain AAC or OPUS audio.
 
@@ -45,7 +45,7 @@ The conversion does not use re-encoding, just writes the audio streams into a di
 
 Patreon videos can be extracted from the browser, using Firefox addons [like this one](https://addons.mozilla.org/firefox/addon/video-audio-downloader). But they are separated into snippets, have broken metadata and more.
 
-`ffmpeg` is able to extract the AAC audio stream from the actual MP3-TS files, concatenate them and write them into a m4a container.
+`ffmpeg` is able to extract the AAC audio stream from the actual MP3-TS files, concatenate them and write them into an m4a container.
 
 ## Concatenate
 There are generic `mp3concat` and `mp4concat` scripts there.
