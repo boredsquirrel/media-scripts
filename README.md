@@ -46,3 +46,10 @@ The conversion does not use re-encoding, just writes the audio streams into a di
 Patreon videos can be extracted from the browser, using Firefox addons [like this one](https://addons.mozilla.org/firefox/addon/video-audio-downloader). But they are separated into snippets, have broken metadata and more.
 
 `ffmpeg` is able to extract the AAC audio stream from the actual MP3-TS files, concatenate them and write them into a m4a container.
+
+## Concatenate
+There are generic `mp3concat` and `mp4concat` scripts there.
+
+They are useful if you download videos (above Firefox Addon) and they are in small snippets.
+
+The conversion is really fast as they are just written into the same file, not converted. It works if the videos or music files are normal. For special files, open an issue or use above scripts.
