@@ -1,25 +1,22 @@
 #!/bin/bash
-
 # convert all files to JXL and archive the originals
-# uses GNU parallels for performance
-# dependencies: GNU parallels, graphicsmagick
 
 # archive dir
-mkdir -p $HOME/Backups/Images/originals
+mkdir -p $USER/Backups/Images/originals
 
 # threads
 THREADS=$(( $(nproc) - 2 ))
 
 # JPG
-parallel --bar -j "$THREADS" 'basename=$(basename {} .jpg); gm convert {} $basename.jxl && mv {} /home/user/Backups/Images/originals/' ::: *.jpg
+parallel --bar -j "$THREADS" 'basename=$(basename {} .jpg); gm convert -auto-orient {} $basename.jxl && mv {} $USER/Backups/Images/originals/' ::: *.jpg
 
-parallel --bar -j "$THREADS" 'basename=$(basename {} .jpeg); gm convert {} $basename.jxl && mv {} /home/user/Backups/Images/originals/' ::: *.jpeg
+parallel --bar -j "$THREADS" 'basename=$(basename {} .jpeg); gm convert -auto-orient {} $basename.jxl && mv {} $USER/Backups/Images/originals/' ::: *.jpeg
 
-parallel --bar -j "$THREADS" 'basename=$(basename {} .JPG); gm convert {} $basename.jxl && mv {} /home/user/Backups/Images/originals/' ::: *.JPG
+parallel --bar -j "$THREADS" 'basename=$(basename {} .JPG); gm convert -auto-orient {} $basename.jxl && mv {} $USER/Backups/Images/originals/' ::: *.JPG
 
-parallel --bar -j "$THREADS" 'basename=$(basename {} .JPEG); gm convert {} $basename.jxl && mv {} /home/user/Backups/Images/originals/' ::: *.JPEG
+parallel --bar -j "$THREADS" 'basename=$(basename {} .JPEG); gm convert -auto-orient {} $basename.jxl && mv {} $USER/Backups/Images/originals/' ::: *.JPEG
 
 # PNG
-parallel --bar -j "$THREADS" 'basename=$(basename {} .png); gm convert {} $basename.jxl && mv {} /home/user/Backups/Images/originals/' ::: *.png
+parallel --bar -j "$THREADS" 'basename=$(basename {} .png); gm convert -auto-orient {} $basename.jxl && mv {} $USER/Backups/Images/originals/' ::: *.png
 
-parallel --bar -j "$THREADS" 'basename=$(basename {} .PNG); gm convert {} $basename.jxl && mv {} /home/user/Backups/Images/originals/' ::: *.PNG
+parallel --bar -j "$THREADS" 'basename=$(basename {} .PNG); gm convert -auto-orient {} $basename.jxl && mv {} $USER/Backups/Images/originals/' ::: *.PNG
