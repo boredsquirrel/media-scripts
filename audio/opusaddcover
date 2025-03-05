@@ -1,0 +1,36 @@
+#!/bin/bash
+# Usage: opusaddcover input.opus cover.jpg
+
+# requires: graphicsmagick, ffmpeg, python
+
+if [ "$#" -ne 2 ]; then
+  echo "Usage: $0 input.opus cover.jpg"
+  exit 1
+fi
+
+input="$1"
+cover="$2"
+output="${input%.*}.ogg"
+
+# Get image dimensions using GraphicsMagick
+read width height < <(gm identify -format "%w %h" "$cover")
+
+# Build the METADATA_BLOCK_PICTURE tag using Python.
+# It packs:
+#   - Picture type (3 for front cover)
+#   - Length and value of MIME type ("image/jpeg")
+#   - Length and value of an empty description
+#   - Width, height, depth (24), and 0 colors
+#   - Length and the JPEG binary data itself.
+
+metadata=$(python3 -c "import sys, base64, struct; \
+with open('$cover','rb') as f: d=f.read(); \
+pt = 3; mt = 'image/jpeg'; desc = ''; dp = 24; nc = 0; \
+b = struct.pack('>I', pt) + struct.pack('>I', len(mt)) + mt.encode() + \
+struct.pack('>I', len(desc)) + desc.encode() + \
+struct.pack('>I', $width) + struct.pack('>I', $height) + \
+struct.pack('>I', dp) + struct.pack('>I', nc) + struct.pack('>I', len(d)) + d; \
+sys.stdout.write(base64.b64encode(struct.pack('>I', len(b)) + b).decode())")
+
+# Mux the Opus file into an OGG container with the METADATA_BLOCK_PICTURE metadata.
+ffmpeg -i "$input" -c copy -metadata "METADATA_BLOCK_PICTURE=${metadata}" "$output"
