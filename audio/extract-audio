@@ -1,0 +1,71 @@
+#!/bin/bash
+
+# extract the original audio from videos
+# various audio formats are supported and the correct container is chosen
+# no reencoding is used, so this is very fast and preserves the full quality
+
+# Check if the input file is provided
+if [ "$#" -ne 1 ]; then
+    echo "Usage: $0 <video_file>"
+    exit 1
+fi
+
+file="$1"
+
+# Get the audio codec using ffprobe
+audio_codec=$(ffprobe -v error -select_streams a:0 -show_entries stream=codec_name -of default=noprint_wrappers=1:nokey=1 "$file")
+
+# Set the CONTAINER variable based on the audio codec
+case "$audio_codec" in
+    aac)
+        CONTAINER="m4a"
+        ;;
+    mp3)
+        CONTAINER="mp3"
+        ;;
+    vorbis)
+        CONTAINER="ogg"
+        ;;
+    opus)
+        CONTAINER="ogg"
+        ;;
+    flac)
+        CONTAINER="flac"
+        ;;
+    ac3)
+        CONTAINER="ac3"
+        ;;
+    pcm_s16le)
+        CONTAINER="wav"
+        ;;
+    pcm_alaw)
+        CONTAINER="wav"
+        ;;
+    pcm_ulaw)
+        CONTAINER="wav"
+        ;;
+    dts)
+        CONTAINER="dts"
+        ;;
+    wma)
+        CONTAINER="wma"
+        ;;
+    aiff)
+        CONTAINER="aiff"
+        ;;
+    m4a)
+        CONTAINER="m4a"
+        ;;
+    *)
+        echo "Unsupported audio codec: $audio_codec"
+        exit 1
+        ;;
+esac
+
+# Set the output filename
+OUTPUT="${file%.*}.$CONTAINER"
+
+# Extract the audio
+ffmpeg -i "$file" -vn -c:a copy "$OUTPUT" && rm "$file"
+
+echo "Audio extracted to: $OUTPUT"
