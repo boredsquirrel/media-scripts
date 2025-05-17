@@ -1,0 +1,79 @@
+#!/bin/sh
+
+# Re-encode a video file using AV1 (libsvtav1 encoder, which is way faster than AOM)
+# Re-encode the audio with OPUS, a free and modern audio codec
+# Can reduce movies to 1/4 the size or more.
+
+#### NOTE:
+# Uses pretty high CPU/GPU load and compression. Adapt the values to your liking
+# Smoothing filter ("vf"):
+#    hqdn3d=1:1:4:4 (lower smoothing)
+#    hqdn3d=2:2:6:6 (medium high smoothing)
+#    hqdn3d=2:2:8:8 (high smoothing)
+# CPU/GPU load ("preset"):
+#    from 1-8, low to high load, fast to slow encoding
+# Compression ("crf"):
+#    40, lower for better quality, higher for smaller size
+
+# POSIX-compatible function to get the basename without extension
+get_basename_no_ext() {
+    filename=$1
+    name=${filename##*/}       # Remove directory path
+    base=${name%.*}            # Remove extension
+    echo "$base"
+}
+
+#### Allow to pause the for loop and resume it
+# Handle pause (SIGTSTP - Ctrl+Z)
+on_pause() {
+    echo "Paused. Type 'fg' to resume."
+    kill -STOP $$
+}
+
+# Handle resume (SIGCONT)
+on_resume() {
+    echo "Resumed."
+}
+
+# Handle interrupt (SIGINT - Ctrl+C)
+on_interrupt() {
+    echo "Interrupted. Exiting..."
+    exit 1
+}
+
+# Set up signal traps
+trap on_pause SIGTSTP
+trap on_resume SIGCONT
+trap on_interrupt SIGINT
+
+# Convert a single file
+convert_file() {
+    input_file=$1
+    if [ ! -f "$input_file" ]; then
+        echo "Error: '$input_file' is not a regular file." >&2
+        return 1
+    fi
+
+    base=$(get_basename_no_ext "$input_file")
+    ext=${input_file##*.}
+    output_file="${base}-reencoded-AV1-OPUS.${ext}"
+
+    ffmpeg -i "$input_file" \
+        -vf "hqdn3d=1:1:4:4" \
+        -c:v libsvtav1 -crf 40 -preset 6 \
+        -c:a libopus \
+        -map_metadata 0 \
+        -movflags +faststart \
+        "$output_file"
+}
+
+# Main logic
+if [ "$#" -eq 1 ]; then
+    convert_file "$1"
+else
+    for f in *; do
+        if [ -f "$f" ]; then
+            convert_file "$f"
+        fi
+    done
+fi
