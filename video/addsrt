@@ -1,0 +1,25 @@
+#!/bin/sh
+
+# Add a .srt subtitle to a .mp4 video and put it into an MKV container
+# remuxes, so does not change the quality and is pretty fast
+
+# POSIX-compatible function to get the basename without extension
+get_basename_no_ext() {
+    filename=$1
+    name=${filename##*/}       # Remove directory path
+    base=${name%.*}            # Remove extension
+    echo "$base"
+}
+
+# Check arguments
+if [ $# -ne 2 ]; then
+    echo "Usage: $0 video.mp4 subtitle.srt"
+    exit 1
+fi
+
+video_file="$1"
+subtitle_file="$2"
+output_file="$(get_basename_no_ext "$video_file").mkv"
+
+# Run ffmpeg to remux
+ffmpeg -i "$video_file" -i "$subtitle_file" -c copy -c:s srt "$output_file"
