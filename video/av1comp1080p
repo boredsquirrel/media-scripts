@@ -1,0 +1,25 @@
+#!/bin/sh
+
+# av1comp but to 1080p
+# recommended to use better quality (2K, 4K) video as source for an amazing result
+
+for input_file in *; do
+    # Skip if not a regular file
+    [ -f "$input_file" ] || continue
+
+    # Extract filename and extension
+    filename=$(basename "$input_file")
+    name=${filename%.*}
+    ext=${filename##*.}
+
+    # Construct output filename
+    output_file="${name}-reencoded-AV1-1080p-Opus.mkv"
+
+    ffmpeg -i "$input_file" \
+        -vf "hqdn3d=1:1:2:2,scale=-2:1080" \
+        -c:v libsvtav1 -crf 40 -preset 6 \
+        -c:a libopus -ac 2 \
+        -map_metadata 0 \
+        -movflags +faststart \
+        "$output_file"
+done
