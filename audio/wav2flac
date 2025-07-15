@@ -1,0 +1,14 @@
+#!/bin/sh
+
+# POSIX shell script to re-encode .wav files to .flac
+# the conversion is quick and lossless, but FLAC compression frees up approx. 1/3 of space
+# WARNING: original .wav files are deleted!
+
+# dependencies: ffmpeg, GNU parallel
+
+# Get number of CPU cores and subtract 2 (minimum 1)
+THREADS=$((nproc - 2))
+[ "$THREADS" -lt 1 ] && THREADS=1
+
+# Use GNU parallel to find and encode .flac files
+parallel -j "$THREADS" 'ffmpeg -i {} {.}.flac && rm {}' ::: *.wav *.WAV
