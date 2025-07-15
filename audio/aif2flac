@@ -1,0 +1,10 @@
+#!/bin/sh
+
+# POSIX shell script to re-encode Apple uncompressed .aif files to .flac using ffmpeg and GNU parallel
+
+# Get number of CPU cores and subtract 2 (minimum 1)
+THREADS=$((nproc - 2))
+[ "$THREADS" -lt 1 ] && THREADS=1
+
+# Use GNU parallel to find and encode .flac files
+parallel -j "$THREADS" 'ffmpeg -i {} {.}.flac && rm {}' ::: *.AIF *.aif
